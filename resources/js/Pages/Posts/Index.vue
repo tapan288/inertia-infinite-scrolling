@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useIntersectionObserver } from "@vueuse/core";
 import { router, usePage } from "@inertiajs/vue3";
+import axios from "axios";
 
 const props = defineProps({
     posts: {
@@ -19,19 +20,22 @@ useIntersectionObserver(lastElement, ([{ isIntersecting }]) => {
     }
 
     // Fetch more posts
-    router.reload({
-        data: {
-            page: props.posts.meta.current_page + 1,
-        },
-        onSuccess: () => {
-            postsData.value = [...postsData.value, ...props.posts.data];
-        },
+    axios.get(props.posts.links.next).then((response) => {
+        console.log(response.data);
+        postsData.value = [...postsData.value, ...response.data.data];
     });
+    // router.reload({
+    //     data: {
+    //         page: props.posts.meta.current_page + 1,
+    //     },
+    //     onSuccess: () => {
+    //         postsData.value = [...postsData.value, ...props.posts.data];
+    //     },
+    // });
 });
 </script>
 
 <template>
-    <!-- {{ posts }} -->
     <div class="max-w-2xl mx-auto my-12 space-y-12">
         <div v-for="post in postsData" :key="post.id">
             <h1 class="font-bold text-3xl">{{ post.id }}: {{ post.title }}</h1>
