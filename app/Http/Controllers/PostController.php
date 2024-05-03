@@ -11,7 +11,7 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = Post::latest()->paginate(10);
+        $posts = Post::latest()->cursorPaginate(10);
 
         if ($request->expectsJson()) {
             return PostResource::collection($posts);
